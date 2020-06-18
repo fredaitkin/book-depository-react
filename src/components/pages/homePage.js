@@ -1,17 +1,41 @@
-import React from 'react';
+import React, {Component} from 'react';
 
-function Homepage() {
-  return (
-  	<div className="container-fluid">
-	
-		<h1>Book Depository</h1>
+import Books from './books';
 
-		<p>
-			Melissa and Stephanie's book colleciton.
-			Also used to flag books that have been lent out to friends.
-		</p>
-  	</div>
-  );
-}
+class Homepage extends Component {
+
+    state = {
+        books: this.returnBooks()
+    }
+
+    returnBooks() {
+        if (localStorage.getItem('books') == null) {
+            localStorage.setItem('books', JSON.stringify([]));
+        }
+        return JSON.parse(localStorage.getItem('books'));
+    }
+
+    onAddOrEdit = (data) => {
+        var books = this.returnBooks();
+        books.push(data);
+        localStorage.setItem('books', JSON.stringify(books));
+        this.setState({books});
+    }
+
+    render() {
+        return (
+            <div className="container-fluid">
+            
+                <h1>Book Depository</h1>
+
+                <Books
+                    onAddOrEdit={this.onAddOrEdit} />
+
+                <p>list of books
+                </p>
+            </div>
+          );
+        }
+    }
 
 export default Homepage;
