@@ -1,4 +1,8 @@
 import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import * as actions from './../../actions/bookActions';
+import {bindActionCreators} from 'redux';
+
 
 class Books extends Component {
     state = {
@@ -26,7 +30,12 @@ class Books extends Component {
 
     handleSubmit = e => {
         e.preventDefault();
-        this.props.onAddOrEdit(this.state);
+        if (this.props.currentIndex == -1) {
+            this.props.insertBook(this.state);
+        } else {
+            console.log('trying to update');
+            this.props.updateBook(this.state);
+        }
     }
 
     componentDidUpdate(prevProps) {
@@ -55,4 +64,18 @@ class Books extends Component {
     }
 }
 
-export default Books;
+const mapStateToProps = state => {
+    return {
+        books : state.books,
+        currentIndex : state.currentIndex
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return bindActionCreators({
+        insertBook : actions.insert,
+        updateBook : actions.update
+    }, dispatch)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps) (Books);

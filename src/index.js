@@ -2,11 +2,25 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import {createStore} from "redux";
+import {Provider} from "react-redux";
+import {bookReducer} from './reducers/bookReducer';
+
+if (localStorage.getItem('books') == null) {
+    localStorage.setItem('books', JSON.stringify([]));
+}
+
+let initialState = {
+	currentIndex: -1,
+	books: JSON.parse(localStorage.getItem('books'))
+}
+
+var store = createStore(bookReducer, initialState);
 
 ReactDOM.render(
-  <React.StrictMode>
+  <Provider store={store}>
     <App />
-  </React.StrictMode>,
+  </Provider>,
   document.getElementById('root')
 );
 

@@ -1,44 +1,17 @@
 import React, {Component} from 'react';
-
+import {connect} from 'react-redux';
 import Books from './books';
+import * as actions from './../../actions/bookActions';
+import {bindActionCreators} from 'redux';
 
 class Homepage extends Component {
 
-    state = {
-        currentIndex: -1,
-        books: this.returnBooks()
-    }
-
-    returnBooks() {
-        if (localStorage.getItem('books') == null) {
-            localStorage.setItem('books', JSON.stringify([]));
-        }
-        return JSON.parse(localStorage.getItem('books'));
-    }
-
-    onAddOrEdit = (data) => {
-        var books = this.returnBooks();
-        if (this.state.currentIndex == -1) {
-            books.push(data);   
-        } else {
-            books[this.state.currentIndex] = data;
-        }
-
-        localStorage.setItem('books', JSON.stringify(books));
-        this.setState({books, currentIndex: -1});
-    }
-
     handleEdit = index => {
-        this.setState({
-            currentIndex: index
-        })
+        this.props.updateBookIndex(index);
     }
 
     handleDelete = index => {
-        var books = this.returnBooks();
-        books.splice(index, 1);
-        localStorage.setItem('books', JSON.stringify(books));
-        this.setState({books, currentIndex: -1});
+        this.props.deleteBook(index);
     }
 
     render() {
@@ -47,18 +20,14 @@ class Homepage extends Component {
             
                 <h1>Book Depository</h1>
 
-                <Books
-                    onAddOrEdit={this.onAddOrEdit} 
-                    currentIndex = {this.state.currentIndex}
-                    books = {this.state.books}
-                />
+                <Books />
 
                 <hr/>
 
                 <table>
                     <tbody>
                         {
-                            this.state.books.map((book, index) => {
+                            this.props.books.map((book, index) => {
                                 return <tr key={index}>
                                     <td>{book.title}</td>
                                     <td>{book.author}</td>
@@ -76,4 +45,17 @@ class Homepage extends Component {
         }
     }
 
-export default Homepage;
+const mapStateToProps = state => {
+    return {
+        books : state.books
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return bindActionCreators({
+        deleteBook : actions.Delete,
+        updateBookIndex : actions.UpdateIndex
+    }, dispatch)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps) (Homepage);
