@@ -2,10 +2,20 @@ import React, {Component} from 'react';
 
 class Books extends Component {
     state = {
-        title: '',
-        author: '',
-        type: '',
-        borrower: ''
+        ...this.returnStateObject()
+    }
+
+    returnStateObject() {
+        if (this.props.currentIndex  == -1) {
+            return {
+                title: '',
+                author: '',
+                type: '',
+                borrower: ''
+            }
+        } else {
+            return this.props.books[this.props.currentIndex];
+        }
     }
 
     handleInputChange = e => {
@@ -17,6 +27,12 @@ class Books extends Component {
     handleSubmit = e => {
         e.preventDefault();
         this.props.onAddOrEdit(this.state);
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.currentIndex != this.props.currentIndex || prevProps.books.length != this.props.books.length) {
+            this.setState({...this.returnStateObject()});
+        }
     }
 
     render() {
